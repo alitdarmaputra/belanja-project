@@ -13,4 +13,5 @@ type UserService interface {
 	Delete(ctx context.Context, userId int)
 	FindById(ctx context.Context, userId int) response.UserResponse
 	FindAll(ctx context.Context) []response.UserResponse
+	Login(ctx context.Context, request request.UserLoginRequest) *Token
 }

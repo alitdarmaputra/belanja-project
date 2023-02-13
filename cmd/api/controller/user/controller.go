@@ -10,4 +10,5 @@ type UserController interface {
 	Delete(ctx *gin.Context)
 	FindById(ctx *gin.Context)
 	FindAll(ctx *gin.Context)
+	Login(ctx *gin.Context)
 }

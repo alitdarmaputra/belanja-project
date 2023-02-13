@@ -23,3 +23,8 @@ type UserUpdateRequest struct {
 	Latitude    float64 `json:"latitude"     binding:"required,geolocation"`
 	Longitude   float64 `json:"longitude"    binding:"required,geolocation"`
 }
+
+type UserLoginRequest struct {
+	Email    string `json:"email"    binding:"required,email"`
+	Password string `json:"password" binding:"required"`
+}

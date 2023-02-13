@@ -63,3 +63,13 @@ func (controller *UserControllerImpl) FindAll(ctx *gin.Context) {
 	userResponses := controller.UserService.FindAll(context.Background())
 	response.JsonBasicData(ctx, http.StatusOK, "OK", userResponses)
 }
+
+func (controller *UserControllerImpl) Login(ctx *gin.Context) {
+	userLoginRequest := request.UserLoginRequest{}
+	err := ctx.ShouldBind(&userLoginRequest)
+	utils.PanicIfError(err)
+
+	token := controller.UserService.Login(context.Background(), userLoginRequest)
+
+	response.JsonBasicData(ctx, http.StatusOK, "OK", token)
+}

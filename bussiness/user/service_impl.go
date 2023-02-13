@@ -2,18 +2,29 @@ package user
 
 import (
 	"context"
+	"errors"
+	"time"
 
+	"github.com/alitdarmaputra/belanja-project/bussiness"
 	"github.com/alitdarmaputra/belanja-project/cmd/api/request"
 	"github.com/alitdarmaputra/belanja-project/cmd/api/response"
 	"github.com/alitdarmaputra/belanja-project/modules/database/user"
 	"github.com/alitdarmaputra/belanja-project/utils"
+	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+)
+
+const (
+	defaultSecretKey  = "default-secret-key"
+	defaultJWTExpired = 24 * time.Hour
 )
 
 type UserServiceImpl struct {
 	UserRepository user.UserRepository
 	DB             *gorm.DB
+	jwtSecretKey   string
+	jwtExpired     time.Duration
 }
 
 func NewUserService(
@@ -23,6 +34,8 @@ func NewUserService(
 	return &UserServiceImpl{
 		UserRepository: userRepository,
 		DB:             db,
+		jwtSecretKey:   defaultSecretKey,
+		jwtExpired:     defaultJWTExpired,
 	}
 }
 
@@ -108,4 +121,40 @@ func (service *UserServiceImpl) FindAll(ctx context.Context) []response.UserResp
 	users := service.UserRepository.FindAll(ctx, tx)
 
 	return response.ToUserResponses(users)
+}
+
+func (service *UserServiceImpl) Login(
+	ctx context.Context,
+	request request.UserLoginRequest,
+) *Token {
+	tx := service.DB.Begin()
+	defer utils.CommitOrRollBack(tx)
+
+	user, err := service.UserRepository.FindByEmail(ctx, tx, request.Email)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		panic(bussiness.NewUnauthorizedError("Incorrect email and password entered"))
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password)); err != nil {
+		panic(bussiness.NewUnauthorizedError("Incorrect email and password entered"))
+	}
+
+	token, err := service.GenerateToken(user)
+	utils.PanicIfError(err)
+
+	return &Token{
+		Token: token,
+	}
+}
+
+func (service *UserServiceImpl) GenerateToken(user user.User) (string, error) {
+	eJWT := jwt.NewWithClaims(
+		jwt.SigningMethodHS256,
+		jwt.MapClaims{
+			"id":  user.Id,
+			"exp": time.Now().Add(service.jwtExpired).Unix(),
+		},
+	)
+
+	return eJWT.SignedString([]byte(service.jwtSecretKey))
 }

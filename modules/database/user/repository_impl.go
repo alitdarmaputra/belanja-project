@@ -46,6 +46,16 @@ func (repository *UserRepositoryImpl) FindById(
 	return user, result.Error
 }
 
+func (repository *UserRepositoryImpl) FindByEmail(
+	ctx context.Context,
+	tx *gorm.DB,
+	email string,
+) (User, error) {
+	var user User
+	result := tx.First(&user, "email = ?", email)
+	return user, result.Error
+}
+
 func (repository *UserRepositoryImpl) FindAll(ctx context.Context, tx *gorm.DB) []User {
 	var users []User
 	tx.Find(&users)

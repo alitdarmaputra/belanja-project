@@ -12,4 +12,5 @@ type UserRepository interface {
 	Delete(ctx context.Context, tx *gorm.DB, userId int) error
 	FindById(ctx context.Context, tx *gorm.DB, userId int) (User, error)
 	FindAll(ctx context.Context, tx *gorm.DB) []User
+	FindByEmail(ctx context.Context, tx *gorm.DB, email string) (User, error)
 }
