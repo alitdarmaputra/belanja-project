@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 
+	"github.com/alitdarmaputra/belanja-project/modules/database"
 	"gorm.io/gorm"
 )
 
@@ -19,7 +20,7 @@ func (repository *UserRepositoryImpl) Save(
 	user User,
 ) (User, error) {
 	result := tx.Create(&user)
-	return user, result.Error
+	return user, database.WrapError(result.Error)
 }
 
 func (repository *UserRepositoryImpl) Update(
@@ -28,12 +29,12 @@ func (repository *UserRepositoryImpl) Update(
 	user User,
 ) (User, error) {
 	result := tx.Save(&user)
-	return user, result.Error
+	return user, database.WrapError(result.Error)
 }
 
 func (repository *UserRepositoryImpl) Delete(ctx context.Context, tx *gorm.DB, userId int) error {
 	result := tx.Delete(&User{}, userId)
-	return result.Error
+	return database.WrapError(result.Error)
 }
 
 func (repository *UserRepositoryImpl) FindById(
@@ -43,7 +44,7 @@ func (repository *UserRepositoryImpl) FindById(
 ) (User, error) {
 	var user User
 	result := tx.First(&user, userId)
-	return user, result.Error
+	return user, database.WrapError(result.Error)
 }
 
 func (repository *UserRepositoryImpl) FindByEmail(
@@ -53,7 +54,7 @@ func (repository *UserRepositoryImpl) FindByEmail(
 ) (User, error) {
 	var user User
 	result := tx.First(&user, "email = ?", email)
-	return user, result.Error
+	return user, database.WrapError(result.Error)
 }
 
 func (repository *UserRepositoryImpl) FindAll(ctx context.Context, tx *gorm.DB) []User {
