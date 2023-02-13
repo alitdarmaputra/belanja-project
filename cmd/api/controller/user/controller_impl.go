@@ -6,6 +6,7 @@ import (
 
 	"github.com/alitdarmaputra/belanja-project/bussiness/user"
 	"github.com/alitdarmaputra/belanja-project/cmd/api/common/response"
+	"github.com/alitdarmaputra/belanja-project/cmd/api/middleware"
 	"github.com/alitdarmaputra/belanja-project/cmd/api/request"
 	"github.com/alitdarmaputra/belanja-project/utils"
 	"github.com/gin-gonic/gin"
@@ -13,11 +14,16 @@ import (
 
 type UserControllerImpl struct {
 	UserService user.UserService
+	Middleware  middleware.Authetication
 }
 
-func NewUserController(userService user.UserService) UserController {
+func NewUserController(
+	userService user.UserService,
+	middleware middleware.Authetication,
+) UserController {
 	return &UserControllerImpl{
 		UserService: userService,
+		Middleware:  middleware,
 	}
 }
 
@@ -31,11 +37,18 @@ func (controller *UserControllerImpl) Create(ctx *gin.Context) {
 }
 
 func (controller *UserControllerImpl) Update(ctx *gin.Context) {
-	userUpdateRequest := request.UserUpdateRequest{}
-	err := ctx.ShouldBindJSON(&userUpdateRequest)
+	claims, err := controller.Middleware.ExtractJWTUser(ctx)
 	utils.PanicIfError(err)
 
-	userResponse := controller.UserService.Update(context.Background(), userUpdateRequest)
+	userUpdateRequest := request.UserUpdateRequest{}
+	err = ctx.ShouldBindJSON(&userUpdateRequest)
+	utils.PanicIfError(err)
+
+	userResponse := controller.UserService.Update(
+		context.Background(),
+		userUpdateRequest,
+		claims.Id,
+	)
 	response.JsonBasicData(ctx, http.StatusOK, "OK", userResponse)
 }
 
@@ -50,12 +63,10 @@ func (controller *UserControllerImpl) Delete(ctx *gin.Context) {
 }
 
 func (controller *UserControllerImpl) FindById(ctx *gin.Context) {
-	pathParam := request.PathParam{}
-
-	err := ctx.ShouldBindUri(&pathParam)
+	claims, err := controller.Middleware.ExtractJWTUser(ctx)
 	utils.PanicIfError(err)
 
-	userResponse := controller.UserService.FindById(context.Background(), pathParam.Id)
+	userResponse := controller.UserService.FindById(context.Background(), claims.Id)
 	response.JsonBasicData(ctx, http.StatusOK, "OK", userResponse)
 }
 

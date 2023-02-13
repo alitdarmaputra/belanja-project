@@ -68,11 +68,12 @@ func (service *UserServiceImpl) Create(
 func (service *UserServiceImpl) Update(
 	ctx context.Context,
 	request request.UserUpdateRequest,
+	userId int,
 ) response.UserResponse {
 	tx := service.DB.Begin()
 	defer utils.CommitOrRollBack(tx)
 
-	user, err := service.UserRepository.FindById(ctx, tx, request.Id)
+	user, err := service.UserRepository.FindById(ctx, tx, userId)
 	utils.PanicIfError(err)
 
 	user.Email = request.Email

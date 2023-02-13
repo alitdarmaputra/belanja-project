@@ -9,7 +9,7 @@ import (
 
 type UserService interface {
 	Create(ctx context.Context, request request.UserCreateRequest) response.UserResponse
-	Update(ctx context.Context, request request.UserUpdateRequest) response.UserResponse
+	Update(ctx context.Context, request request.UserUpdateRequest, userId int) response.UserResponse
 	Delete(ctx context.Context, userId int)
 	FindById(ctx context.Context, userId int) response.UserResponse
 	FindAll(ctx context.Context) []response.UserResponse

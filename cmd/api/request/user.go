@@ -13,7 +13,6 @@ type UserCreateRequest struct {
 }
 
 type UserUpdateRequest struct {
-	Id          int     `json:"id"           binding:"required,numeric"`
 	Email       string  `json:"email"        binding:"required,email"`
 	FullName    string  `json:"full_name"    binding:"required"`
 	PhoneNumber string  `json:"phone_number" binding:"required,numeric"`

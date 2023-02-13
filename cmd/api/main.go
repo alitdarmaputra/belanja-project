@@ -11,6 +11,7 @@ import (
 
 	userService "github.com/alitdarmaputra/belanja-project/bussiness/user"
 	userController "github.com/alitdarmaputra/belanja-project/cmd/api/controller/user"
+	"github.com/alitdarmaputra/belanja-project/cmd/api/middleware"
 	"github.com/alitdarmaputra/belanja-project/cmd/api/router"
 	"github.com/alitdarmaputra/belanja-project/config/db"
 	userRepository "github.com/alitdarmaputra/belanja-project/modules/database/user"
@@ -24,7 +25,8 @@ func main() {
 	}
 
 	userService := userService.NewUserService(userRepository, db)
-	userController := userController.NewUserController(userService)
+	middleware := middleware.NewAuthentication("default-secret-key")
+	userController := userController.NewUserController(userService, middleware)
 	handler := router.NewRouter(userController)
 
 	server := http.Server{
