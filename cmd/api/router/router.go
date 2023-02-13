@@ -1,15 +1,15 @@
 package router
 
 import (
-	"github.com/alitdarmaputra/belanja-project/cmd/api/controller/exception"
 	"github.com/alitdarmaputra/belanja-project/cmd/api/controller/user"
+	"github.com/alitdarmaputra/belanja-project/cmd/api/middleware"
 	"github.com/gin-gonic/gin"
 )
 
 func NewRouter(userController user.UserController) *gin.Engine {
 	r := gin.New()
 
-	r.Use(gin.CustomRecovery(exception.ErrorHandler))
+	r.Use(gin.CustomRecovery(middleware.ErrorHandler))
 
 	v1 := r.Group("/v1")
 	v1.PUT("/users", userController.Update)
