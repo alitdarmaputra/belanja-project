@@ -7,6 +7,7 @@ import (
 	"github.com/alitdarmaputra/belanja-project/cmd/api/response"
 	"github.com/alitdarmaputra/belanja-project/modules/database/user"
 	"github.com/alitdarmaputra/belanja-project/utils"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -29,13 +30,16 @@ func (service *UserServiceImpl) Create(
 	ctx context.Context,
 	request request.UserCreateRequest,
 ) response.UserResponse {
+	hash, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.MinCost)
+	utils.PanicIfError(err)
+
 	tx := service.DB.Begin()
 	defer utils.CommitOrRollBack(tx)
 
 	user, err := service.UserRepository.Save(ctx, tx, user.User{
 		Email:       request.Email,
 		FullName:    request.FullName,
-		Password:    request.Password,
+		Password:    string(hash),
 		PhoneNumber: request.PhoneNumber,
 		Address:     request.Address,
 		AreaId:      request.AreaId,
