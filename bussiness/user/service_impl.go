@@ -59,18 +59,19 @@ func (service *UserServiceImpl) Update(
 	tx := service.DB.Begin()
 	defer utils.CommitOrRollBack(tx)
 
-	user, err := service.UserRepository.Update(ctx, tx, user.User{
-		Id:          request.Id,
-		Email:       request.Email,
-		FullName:    request.FullName,
-		Password:    request.Password,
-		PhoneNumber: request.PhoneNumber,
-		Address:     request.Address,
-		AreaId:      request.AreaId,
-		RoleId:      request.RoleId,
-		Latitude:    request.Latitude,
-		Longitude:   request.Longitude,
-	})
+	user, err := service.UserRepository.FindById(ctx, tx, request.Id)
+	utils.PanicIfError(err)
+
+	user.Email = request.Email
+	user.FullName = request.FullName
+	user.PhoneNumber = request.PhoneNumber
+	user.Address = request.Address
+	user.AreaId = request.AreaId
+	user.RoleId = request.RoleId
+	user.Latitude = request.Latitude
+	user.Longitude = request.Longitude
+
+	user, err = service.UserRepository.Update(ctx, tx, user)
 	utils.PanicIfError(err)
 
 	return response.ToUserResponse(user)
@@ -80,7 +81,10 @@ func (service *UserServiceImpl) Delete(ctx context.Context, userId int) {
 	tx := service.DB.Begin()
 	defer utils.CommitOrRollBack(tx)
 
-	err := service.UserRepository.Delete(ctx, tx, userId)
+	user, err := service.UserRepository.FindById(ctx, tx, userId)
+	utils.PanicIfError(err)
+
+	err = service.UserRepository.Delete(ctx, tx, user.Id)
 	utils.PanicIfError(err)
 }
 

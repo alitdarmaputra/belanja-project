@@ -16,7 +16,6 @@ type UserUpdateRequest struct {
 	Id          int     `json:"id"           binding:"required,numeric"`
 	Email       string  `json:"email"        binding:"required,email"`
 	FullName    string  `json:"full_name"    binding:"required"`
-	Password    string  `json:"password"     binding:"required"`
 	PhoneNumber string  `json:"phone_number" binding:"required,numeric"`
 	Address     string  `json:"address"      binding:"required"`
 	AreaId      int     `json:"area_id"      binding:"required,numeric"`
