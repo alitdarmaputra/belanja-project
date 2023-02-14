@@ -9,25 +9,34 @@ import (
 	"syscall"
 	"time"
 
+	productService "github.com/alitdarmaputra/belanja-project/bussiness/product"
 	userService "github.com/alitdarmaputra/belanja-project/bussiness/user"
+	productController "github.com/alitdarmaputra/belanja-project/cmd/api/controller/product"
 	userController "github.com/alitdarmaputra/belanja-project/cmd/api/controller/user"
 	"github.com/alitdarmaputra/belanja-project/cmd/api/middleware"
 	"github.com/alitdarmaputra/belanja-project/cmd/api/router"
 	"github.com/alitdarmaputra/belanja-project/config/db"
+	productRepository "github.com/alitdarmaputra/belanja-project/modules/database/product"
 	userRepository "github.com/alitdarmaputra/belanja-project/modules/database/user"
 )
 
 func main() {
-	userRepository := userRepository.NewUserRepository()
 	db, err := db.NewMySQL()
 	if err != nil {
 		panic(err)
 	}
+	userRepository := userRepository.NewUserRepository()
+	productRepository := productRepository.NewProductRepository()
+
+	middleware := middleware.NewAuthentication("default-secret-key")
 
 	userService := userService.NewUserService(userRepository, db)
-	middleware := middleware.NewAuthentication("default-secret-key")
 	userController := userController.NewUserController(userService, middleware)
-	handler := router.NewRouter(userController)
+
+	productService := productService.NewProductService(productRepository, userRepository, db)
+	productController := productController.NewProductController(productService, middleware)
+
+	handler := router.NewRouter(userController, productController)
 
 	server := http.Server{
 		Addr:    "localhost:3000",
