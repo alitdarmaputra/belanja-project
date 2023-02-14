@@ -2,7 +2,7 @@ CREATE TABLE orders (
     id INT PRIMARY KEY AUTO_INCREMENT,
     users_id INT,
     outlets_id INT,
-    shipper_id INT,
+    shipper_id VARCHAR(100),
     status VARCHAR(20),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
