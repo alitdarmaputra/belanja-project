@@ -36,7 +36,7 @@ func main() {
 	productService := productService.NewProductService(productRepository, userRepository, db)
 	productController := productController.NewProductController(productService, middleware)
 
-	handler := router.NewRouter(userController, productController)
+	handler := router.NewRouter(userController, productController, middleware)
 
 	server := http.Server{
 		Addr:    "localhost:3000",

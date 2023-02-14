@@ -13,8 +13,9 @@ import (
 )
 
 type token struct {
-	Id  int `json:"id"`
-	Exp int `json:"exp"`
+	Id     int `json:"id"`
+	Exp    int `json:"exp"`
+	RoleId int `json:"role"`
 }
 
 type Authetication interface {

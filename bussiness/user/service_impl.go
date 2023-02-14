@@ -152,8 +152,9 @@ func (service *UserServiceImpl) GenerateToken(user user.User) (string, error) {
 	eJWT := jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
 		jwt.MapClaims{
-			"id":  user.Id,
-			"exp": time.Now().Add(service.jwtExpired).Unix(),
+			"id":   user.Id,
+			"exp":  time.Now().Add(service.jwtExpired).Unix(),
+			"role": user.RoleId,
 		},
 	)
 

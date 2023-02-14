@@ -4,12 +4,14 @@ import (
 	"github.com/alitdarmaputra/belanja-project/cmd/api/controller/product"
 	"github.com/alitdarmaputra/belanja-project/cmd/api/controller/user"
 	"github.com/alitdarmaputra/belanja-project/cmd/api/middleware"
+	"github.com/alitdarmaputra/belanja-project/constant"
 	"github.com/gin-gonic/gin"
 )
 
 func NewRouter(
 	userController user.UserController,
 	productController product.ProductController,
+	authentication middleware.Authetication,
 ) *gin.Engine {
 	r := gin.New()
 
@@ -22,13 +24,56 @@ func NewRouter(
 	v1.POST("/auth/register", userController.Create)
 
 	v1JWTAuth := v1.Use(middleware.JWTMiddlewareAuth("default-secret-key"))
-	v1JWTAuth.PUT("/profile", userController.Update)
-	v1JWTAuth.GET("/profile", userController.FindById)
 
-	v1JWTAuth.POST("/products", productController.Create)
-	v1JWTAuth.PUT("/products", productController.Update)
-	v1JWTAuth.DELETE("/products/:id", productController.Delete)
-	v1JWTAuth.GET("/products/:id", productController.FindById)
-	v1JWTAuth.GET("/products", productController.FindAll)
+	v1JWTAuth.PUT("/profile",
+		middleware.PermissionMiddleware(
+			authentication,
+			constant.PermissionUpdateUser,
+		),
+		userController.Update)
+
+	v1JWTAuth.GET("/profile",
+		middleware.PermissionMiddleware(
+			authentication,
+			constant.PermissionShowUser,
+		),
+		userController.FindById)
+
+	v1JWTAuth.POST("/products",
+		middleware.PermissionMiddleware(
+			authentication,
+			constant.PermissionCreateProduct),
+		productController.Create)
+
+	v1JWTAuth.PUT("/products",
+		middleware.PermissionMiddleware(
+			authentication,
+			constant.PermissionUpdateProduct,
+			constant.PermissionShowProduct,
+		),
+		productController.Update)
+
+	v1JWTAuth.DELETE("/products/:id",
+		middleware.PermissionMiddleware(
+			authentication,
+			constant.PermissionDeleteProduct,
+			constant.PermissionShowProduct,
+		),
+		productController.Delete)
+
+	v1JWTAuth.GET("/products/:id",
+		middleware.PermissionMiddleware(
+			authentication,
+			constant.PermissionShowProduct,
+		),
+		productController.FindById)
+
+	v1JWTAuth.GET("/products",
+		middleware.PermissionMiddleware(
+			authentication,
+			constant.PermissionShowProduct,
+		),
+		productController.FindAll)
+
 	return r
 }

@@ -5,3 +5,9 @@ type ErrResponse struct {
 	Status      uint16 `json:"status"`
 	Description string `json:"description"`
 }
+
+type Role struct {
+	Id          int
+	Name        string
+	Permissions map[string]string
+}
