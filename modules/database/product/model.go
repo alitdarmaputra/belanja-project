@@ -11,6 +11,7 @@ type Product struct {
 	Id        int
 	Name      string
 	Qty       int
+	Price     int
 	OutletsId int
 	Outlet    user.User `gorm:"foreignkey:OutletsId"`
 	CreatedAt time.Time

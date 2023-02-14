@@ -44,6 +44,7 @@ func (service *ProductServiceImpl) Create(
 	product, err := service.ProductRepository.Save(ctx, tx, product.Product{
 		Name:   request.Name,
 		Qty:    request.Qty,
+		Price:  request.Price,
 		Outlet: outlet,
 	})
 	utils.PanicIfError(err)
@@ -68,6 +69,7 @@ func (service *ProductServiceImpl) Update(
 
 	product.Name = request.Name
 	product.Qty = request.Qty
+	product.Price = request.Price
 
 	product, err = service.ProductRepository.Update(ctx, tx, product)
 	utils.PanicIfError(err)
