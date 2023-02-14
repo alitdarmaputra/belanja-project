@@ -1,11 +1,12 @@
-CREATE TABLE products (
+CREATE TABLE order_details (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    qty INT DEFAULT 0 NOT NULL,
-    outlets_id INT,
+    orders_id INT,
+    products_id INT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
     deleted_at DATETIME,
-    CONSTRAINT FK_UserProduct FOREIGN KEY (outlets_id)
-    REFERENCES users(id)
+    CONSTRAINT FK_Order FOREIGN KEY(orders_id)
+    REFERENCES orders(id),
+    CONSTRAINT FK_Product FOREIGN KEY(products_id)
+    REFERENCES products(id)
 ) ENGINE=InnoDB;
