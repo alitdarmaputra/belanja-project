@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"time"
 
 	"github.com/alitdarmaputra/belanja-project/cmd/api/request"
 	"github.com/alitdarmaputra/belanja-project/cmd/api/response"
@@ -14,4 +15,5 @@ type UserService interface {
 	FindById(ctx context.Context, userId int) response.UserResponse
 	FindAll(ctx context.Context) []response.UserResponse
 	Login(ctx context.Context, request request.UserLoginRequest) *Token
+	SetJWTConfig(secret string, expired time.Duration)
 }

@@ -39,6 +39,11 @@ func NewUserService(
 	}
 }
 
+func (service *UserServiceImpl) SetJWTConfig(secret string, expired time.Duration) {
+	service.jwtSecretKey = secret
+	service.jwtExpired = expired
+}
+
 func (service *UserServiceImpl) Create(
 	ctx context.Context,
 	request request.UserCreateRequest,

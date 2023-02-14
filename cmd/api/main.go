@@ -15,22 +15,40 @@ import (
 	userController "github.com/alitdarmaputra/belanja-project/cmd/api/controller/user"
 	"github.com/alitdarmaputra/belanja-project/cmd/api/middleware"
 	"github.com/alitdarmaputra/belanja-project/cmd/api/router"
+	"github.com/alitdarmaputra/belanja-project/config"
 	"github.com/alitdarmaputra/belanja-project/config/db"
 	productRepository "github.com/alitdarmaputra/belanja-project/modules/database/product"
 	userRepository "github.com/alitdarmaputra/belanja-project/modules/database/user"
+	"github.com/gin-gonic/gin"
+)
+
+const (
+	production = "production"
 )
 
 func main() {
-	db, err := db.NewMySQL()
+	cfg := config.LoadConfigAPI("./config")
+
+	db, err := db.NewMySQL(&cfg.Database)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err.Error())
 	}
+
+	if cfg.Env == production {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	userRepository := userRepository.NewUserRepository()
 	productRepository := productRepository.NewProductRepository()
 
-	middleware := middleware.NewAuthentication("default-secret-key")
+	middleware := middleware.NewAuthentication(cfg.JWTSecretKey)
 
 	userService := userService.NewUserService(userRepository, db)
+	userService.SetJWTConfig(
+		cfg.JWTSecretKey,
+		time.Duration(cfg.JWTExpiredTime)*time.Minute,
+	)
+
 	userController := userController.NewUserController(userService, middleware)
 
 	productService := productService.NewProductService(productRepository, userRepository, db)
