@@ -41,3 +41,31 @@ func NewDuplicateEntryError(error string) error {
 		message: error,
 	}
 }
+
+type BadGateWayError struct {
+	message string
+}
+
+func (error *BadGateWayError) Error() string {
+	return error.message
+}
+
+func NewBadGateWayError(error string) error {
+	return &BadGateWayError{
+		message: error,
+	}
+}
+
+type BadRequestError struct {
+	message string
+}
+
+func (error *BadRequestError) Error() string {
+	return error.message
+}
+
+func NewBadRequestError(error string) error {
+	return &BadRequestError{
+		message: error,
+	}
+}

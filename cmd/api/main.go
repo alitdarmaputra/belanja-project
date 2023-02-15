@@ -9,16 +9,20 @@ import (
 	"syscall"
 	"time"
 
+	orderService "github.com/alitdarmaputra/belanja-project/bussiness/order"
 	productService "github.com/alitdarmaputra/belanja-project/bussiness/product"
 	userService "github.com/alitdarmaputra/belanja-project/bussiness/user"
+	orderController "github.com/alitdarmaputra/belanja-project/cmd/api/controller/order"
 	productController "github.com/alitdarmaputra/belanja-project/cmd/api/controller/product"
 	userController "github.com/alitdarmaputra/belanja-project/cmd/api/controller/user"
 	"github.com/alitdarmaputra/belanja-project/cmd/api/middleware"
 	"github.com/alitdarmaputra/belanja-project/cmd/api/router"
 	"github.com/alitdarmaputra/belanja-project/config"
 	"github.com/alitdarmaputra/belanja-project/config/db"
+	orderRepository "github.com/alitdarmaputra/belanja-project/modules/database/order"
 	productRepository "github.com/alitdarmaputra/belanja-project/modules/database/product"
 	userRepository "github.com/alitdarmaputra/belanja-project/modules/database/user"
+	shipperService "github.com/alitdarmaputra/belanja-project/modules/shipper"
 	"github.com/gin-gonic/gin"
 )
 
@@ -40,6 +44,7 @@ func main() {
 
 	userRepository := userRepository.NewUserRepository()
 	productRepository := productRepository.NewProductRepository()
+	orderRepository := orderRepository.NewOrderRepository()
 
 	middleware := middleware.NewAuthentication(cfg.JWTSecretKey)
 
@@ -54,7 +59,16 @@ func main() {
 	productService := productService.NewProductService(productRepository, userRepository, db)
 	productController := productController.NewProductController(productService, middleware)
 
-	handler := router.NewRouter(userController, productController, middleware)
+	shipperService := shipperService.NewShipperService(cfg.Shipper.BaseUrl, cfg.Shipper.Key)
+	orderService := orderService.NewOrderService(
+		shipperService,
+		userRepository,
+		productRepository,
+		orderRepository,
+		db,
+	)
+	orderController := orderController.NewOrderController(orderService, middleware)
+	handler := router.NewRouter(userController, productController, orderController, middleware, cfg)
 
 	server := http.Server{
 		Addr:    "localhost:3000",

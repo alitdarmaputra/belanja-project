@@ -48,6 +48,11 @@ func (repository *ProductRepositoryImpl) FindById(
 ) (Product, error) {
 	var product Product
 	result := tx.First(&product, productId)
+
+	if result.Error == nil {
+		tx.First(&product.Outlet, product.Id)
+	}
+
 	return product, database.WrapError(result.Error)
 }
 

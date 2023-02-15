@@ -27,6 +27,14 @@ func ErrorHandler(ctx *gin.Context, err any) {
 		return
 	}
 
+	if badGateWayError(ctx, err) {
+		return
+	}
+
+	if badRequestError(ctx, err) {
+		return
+	}
+
 	internalServerError(ctx, err)
 }
 
@@ -80,6 +88,26 @@ func duplicateEntryError(ctx *gin.Context, err any) bool {
 	exception, ok := err.(*bussiness.DuplicateEntryError)
 	if ok {
 		response.JsonBasicData(ctx, http.StatusConflict, "Conflict", exception.Error())
+		return true
+	} else {
+		return false
+	}
+}
+
+func badGateWayError(ctx *gin.Context, err any) bool {
+	exception, ok := err.(*bussiness.BadGateWayError)
+	if ok {
+		response.JsonBasicData(ctx, http.StatusBadGateway, "Bad Gateway", exception.Error())
+		return true
+	} else {
+		return false
+	}
+}
+
+func badRequestError(ctx *gin.Context, err any) bool {
+	exception, ok := err.(*bussiness.BadRequestError)
+	if ok {
+		response.JsonBasicData(ctx, http.StatusBadGateway, "Bad Request", exception.Error())
 		return true
 	} else {
 		return false

@@ -1,9 +1,11 @@
 package router
 
 import (
+	"github.com/alitdarmaputra/belanja-project/cmd/api/controller/order"
 	"github.com/alitdarmaputra/belanja-project/cmd/api/controller/product"
 	"github.com/alitdarmaputra/belanja-project/cmd/api/controller/user"
 	"github.com/alitdarmaputra/belanja-project/cmd/api/middleware"
+	"github.com/alitdarmaputra/belanja-project/config"
 	"github.com/alitdarmaputra/belanja-project/constant"
 	"github.com/gin-gonic/gin"
 )
@@ -11,7 +13,9 @@ import (
 func NewRouter(
 	userController user.UserController,
 	productController product.ProductController,
+	orderController order.OrderController,
 	authentication middleware.Authetication,
+	cfg *config.Api,
 ) *gin.Engine {
 	r := gin.New()
 
@@ -23,7 +27,7 @@ func NewRouter(
 	v1.POST("/auth/login", userController.Login)
 	v1.POST("/auth/register", userController.Create)
 
-	v1JWTAuth := v1.Use(middleware.JWTMiddlewareAuth("default-secret-key"))
+	v1JWTAuth := v1.Use(middleware.JWTMiddlewareAuth(cfg.JWTSecretKey))
 
 	v1JWTAuth.PUT("/profile",
 		middleware.PermissionMiddleware(
@@ -75,5 +79,6 @@ func NewRouter(
 		),
 		productController.FindAll)
 
+	v1JWTAuth.POST("/order", orderController.CreateOrder)
 	return r
 }

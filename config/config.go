@@ -13,6 +13,7 @@ type Api struct {
 	JWTSecretKey   string   `json:"-"                mapstructure:"JWT_SECRET_KEY"`
 	JWTExpiredTime int      `json:"jwt_expired_time" mapstructure:"JWT_EXPIRED"`
 	Database       Database `json:"database"`
+	Shipper        Shipper  `json:"shipper"`
 }
 
 type Database struct {
@@ -22,6 +23,11 @@ type Database struct {
 	Password string `json:"password" mapstructure:"DATABASE_PASSWORD"`
 	Schema   string `json:"schema"   mapstructure:"DATABASE_SCHEMA"`
 	Loc      string `json:"loc"      mapstructure:"DATABASE_LOC"`
+}
+
+type Shipper struct {
+	BaseUrl string `json:"base_url" mapstructure:"SHIPPER_BASEURL"`
+	Key     string `json:"key"      mapstructure:"SHIPPER_API_KEY"`
 }
 
 func LoadConfigAPI(path string) *Api {
@@ -45,6 +51,7 @@ func LoadConfigAPI(path string) *Api {
 
 	viper.Unmarshal(api)
 	viper.Unmarshal(&api.Database)
+	viper.Unmarshal(&api.Shipper)
 
 	return api
 }

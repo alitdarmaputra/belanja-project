@@ -8,13 +8,13 @@ import (
 )
 
 type Product struct {
-	Id        int
-	Name      string
-	Qty       int
-	Price     int
-	OutletsId int
-	Outlet    user.User `gorm:"foreignkey:OutletsId"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt
+	Id        int            `gorm:"column:id"`
+	Name      string         `gorm:"column:name"`
+	Qty       int            `gorm:"column:qty"`
+	Price     int            `gorm:"column:price"`
+	OutletsId int            `gorm:"column:outlets_id"`
+	Outlet    user.User      `gorm:"foreignkey:OutletsId"`
+	CreatedAt time.Time      `gorm:"column:created_at"`
+	UpdatedAt time.Time      `gorm:"column:updated_at"`
+	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at"`
 }
