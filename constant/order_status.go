@@ -5,4 +5,5 @@ const (
 	StatusDelivered = "DELIVERED"
 	StatusRejected  = "REJECTED"
 	StatusCanceled  = "CANCELED"
+	StatusFinish    = "FINISH"
 )

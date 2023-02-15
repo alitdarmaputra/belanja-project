@@ -28,7 +28,7 @@ func (repository *OrderRepositoryImpl) Update(
 	tx *gorm.DB,
 	order Order,
 ) (Order, error) {
-	result := tx.Save(&order)
+	result := tx.Updates(&order)
 	return order, database.WrapError(result.Error)
 }
 
@@ -39,7 +39,8 @@ func (repository *OrderRepositoryImpl) FindById(
 	userId int,
 ) (Order, error) {
 	var order Order
-	result := tx.Where("(outlets_id = ? OR users_id = ?) AND id = ?", userId, userId, orderId).
+	result := tx.Preload("User").
+		Where("(outlets_id = ? OR users_id = ?) AND id = ?", userId, userId, orderId).
 		First(&order)
 	return order, database.WrapError(result.Error)
 }
@@ -50,6 +51,6 @@ func (repository *OrderRepositoryImpl) FindAll(
 	userId int,
 ) []Order {
 	var orders []Order
-	tx.Where("outlets_id = ? OR users_id = ?", userId, userId).Find(&orders)
+	tx.Joins("User").Where("outlets_id = ? OR users_id = ?", userId, userId).Find(&orders)
 	return orders
 }

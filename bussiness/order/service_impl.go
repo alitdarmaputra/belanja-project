@@ -112,3 +112,30 @@ func (service *OrderServiceImpl) Create(
 
 	return response.ToOrderResponse(order)
 }
+
+func (service *OrderServiceImpl) Delete(
+	ctx context.Context,
+	orderId,
+	userId int,
+) {
+	tx := service.DB.Begin()
+	defer utils.CommitOrRollBack(tx)
+
+	order, err := service.OrderRepository.FindById(ctx, tx, orderId, userId)
+	utils.PanicIfError(err)
+
+	if order.User.Id != userId {
+		panic(bussiness.NewUnauthorizedError("Cancel operation unauthorize"))
+	}
+
+	if order.Status == constant.StatusDelivered || order.Status == constant.StatusFinish {
+		panic(bussiness.NewUnauthorizedError("Cancel operation unauthorize"))
+	}
+
+	order.Status = constant.StatusCanceled
+
+	service.Shipper.CancelOrder(ctx, order.ShipperId)
+
+	order, err = service.OrderRepository.Update(ctx, tx, order)
+	utils.PanicIfError(err)
+}

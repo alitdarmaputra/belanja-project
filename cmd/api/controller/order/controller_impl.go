@@ -38,3 +38,15 @@ func (controller *OrderControllerImpl) CreateOrder(ctx *gin.Context) {
 	orderResponse := controller.OrderService.Create(context.TODO(), orderCreateRequest, claims.Id)
 	response.JsonBasicData(ctx, http.StatusCreated, "Created", orderResponse)
 }
+
+func (controller *OrderControllerImpl) CancelOrder(ctx *gin.Context) {
+	claims, err := controller.Middleware.ExtractJWTUser(ctx)
+	utils.PanicIfError(err)
+
+	orderId := request.PathParam{}
+	err = ctx.ShouldBindUri(&orderId)
+	utils.PanicIfError(err)
+
+	controller.OrderService.Delete(ctx, orderId.Id, claims.Id)
+	response.JsonBasicResponse(ctx, http.StatusOK, "OK")
+}

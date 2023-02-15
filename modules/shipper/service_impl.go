@@ -51,3 +51,20 @@ func (service *ShipperServiceImpl) CreateOrder(
 
 	return result.Data.OrderId
 }
+
+func (service *ShipperServiceImpl) CancelOrder(
+	ctx context.Context,
+	shipperId string,
+) {
+	ctxWT, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+
+	r := service.NewRequest()
+	r.SetContext(ctxWT)
+
+	_, err := r.Delete(service.BaseURL + "/v3/order/" + shipperId)
+
+	if err != nil {
+		panic(bussiness.NewBadGateWayError(err.Error()))
+	}
+}

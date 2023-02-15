@@ -79,6 +79,7 @@ func NewRouter(
 		),
 		productController.FindAll)
 
+	v1JWTAuth.DELETE("/order/:id", orderController.CancelOrder)
 	v1JWTAuth.POST("/order", orderController.CreateOrder)
 	return r
 }

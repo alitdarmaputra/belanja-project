@@ -13,4 +13,9 @@ type OrderService interface {
 		request request.OrderCreateRequest,
 		userId int,
 	) response.OrderResponse
+	Delete(
+		ctx context.Context,
+		orderId,
+		userId int,
+	)
 }
