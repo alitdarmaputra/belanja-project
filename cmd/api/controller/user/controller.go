@@ -11,4 +11,5 @@ type UserController interface {
 	FindById(ctx *gin.Context)
 	FindAll(ctx *gin.Context)
 	Login(ctx *gin.Context)
+	ChangePassword(ctx *gin.Context)
 }

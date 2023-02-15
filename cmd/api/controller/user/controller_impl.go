@@ -84,3 +84,15 @@ func (controller *UserControllerImpl) Login(ctx *gin.Context) {
 
 	response.JsonBasicData(ctx, http.StatusOK, "OK", token)
 }
+
+func (controller *UserControllerImpl) ChangePassword(ctx *gin.Context) {
+	claims, err := controller.Middleware.ExtractJWTUser(ctx)
+	utils.PanicIfError(err)
+
+	changePasswordRequest := request.ChangePasswordRequest{}
+	err = ctx.ShouldBindJSON(&changePasswordRequest)
+	utils.PanicIfError(err)
+
+	controller.UserService.ChangePassword(context.Background(), changePasswordRequest, claims.Id)
+	response.JsonBasicResponse(ctx, http.StatusOK, "OK")
+}

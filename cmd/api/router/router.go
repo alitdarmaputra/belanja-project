@@ -36,6 +36,13 @@ func NewRouter(
 		),
 		userController.Update)
 
+	v1JWTAuth.PATCH("/profile",
+		middleware.PermissionMiddleware(
+			authentication,
+			constant.PermissionUpdateUser,
+		),
+		userController.ChangePassword)
+
 	v1JWTAuth.GET("/profile",
 		middleware.PermissionMiddleware(
 			authentication,

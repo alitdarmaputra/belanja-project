@@ -165,3 +165,23 @@ func (service *UserServiceImpl) GenerateToken(user user.User) (string, error) {
 
 	return eJWT.SignedString([]byte(service.jwtSecretKey))
 }
+
+func (service *UserServiceImpl) ChangePassword(
+	ctx context.Context,
+	request request.ChangePasswordRequest,
+	userId int,
+) {
+	tx := service.DB.Begin()
+	defer utils.CommitOrRollBack(tx)
+
+	user, err := service.UserRepository.FindById(ctx, tx, userId)
+	utils.PanicIfError(err)
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(request.NewPassword), bcrypt.MinCost)
+	utils.PanicIfError(err)
+
+	user.Password = string(hash)
+
+	_, err = service.UserRepository.Update(ctx, tx, user)
+	utils.PanicIfError(err)
+}

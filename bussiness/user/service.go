@@ -16,4 +16,5 @@ type UserService interface {
 	FindAll(ctx context.Context) []response.UserResponse
 	Login(ctx context.Context, request request.UserLoginRequest) *Token
 	SetJWTConfig(secret string, expired time.Duration)
+	ChangePassword(ctx context.Context, request request.ChangePasswordRequest, userId int)
 }

@@ -27,3 +27,7 @@ type UserLoginRequest struct {
 	Email    string `json:"email"    binding:"required,email"`
 	Password string `json:"password" binding:"required"`
 }
+
+type ChangePasswordRequest struct {
+	NewPassword string `json:"new_password" binding:"required"`
+}
