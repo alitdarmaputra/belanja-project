@@ -28,7 +28,7 @@ Final Project Studyjam Golang Nest
    
    App can be started with this command:
    ``` 
-   go run ./cmd/api/main.go
+   go run ./cmd/api
    ```
 ### Documentation
    https://elements.getpostman.com/redirect?entityId=21970942-d2a24146-dfe0-44d2-b658-b2bc33023e53&entityType=collection

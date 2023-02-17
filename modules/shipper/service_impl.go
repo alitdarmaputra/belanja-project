@@ -3,6 +3,7 @@ package shipper
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -34,6 +35,9 @@ func (service *ShipperServiceImpl) CreateOrder(
 	ctxWT, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 
+	request.Destination.AreaId = 4748
+	request.Origin.AreaId = 4748
+
 	r := service.NewRequest()
 	r.SetContext(ctxWT)
 	r.SetBody(request)
@@ -42,7 +46,11 @@ func (service *ShipperServiceImpl) CreateOrder(
 	if err != nil {
 		panic(bussiness.NewBadGateWayError(err.Error()))
 	} else if res.StatusCode() != http.StatusCreated {
-		panic(bussiness.NewBadGateWayError("Error from shipper api"))
+		data := map[string]interface{}{}
+
+		err = json.Unmarshal(res.Body(), &data)
+		utils.PanicIfError(err)
+		panic(bussiness.NewBadGateWayError(fmt.Sprintf("%+v", data)))
 	}
 
 	result := ShipperCreateResposne{}
