@@ -42,7 +42,7 @@ func (service *ShipperServiceImpl) CreateOrder(
 	if err != nil {
 		panic(bussiness.NewBadGateWayError(err.Error()))
 	} else if res.StatusCode() != http.StatusCreated {
-		panic(bussiness.NewBadGateWayError(err.Error()))
+		panic(bussiness.NewBadGateWayError("Error from shipper api"))
 	}
 
 	result := ShipperCreateResposne{}
